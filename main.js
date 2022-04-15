@@ -5,75 +5,65 @@ cells.forEach((cell, i) => {
   cell.addEventListener("click", handleclick, { once: true });
 });
 let choice = false;
+let winner = null;
 var counter = 0;
+
+document.getElementById("winner").textContent = "It's O's turn";
 function handleclick(e) {
   // change the value in that cell
+  choice
+    ? (document.getElementById("winner").textContent = "It's O's turn")
+    : (document.getElementById("winner").textContent = "It's X's turn");
   counter++;
   let cell = e.target;
   if (choice === true) {
-    cell.style.background = "red";
+    cell.textContent = "X";
   } else {
-    cell.style.background = "blue";
+    cell.textContent = "O";
   }
-  check("red");
-  check("blue");
+  winner = check("X");
+  winner = check("O");
+  if (counter == 9 && !winner) {
+    document.getElementById("winner").textContent = "It's a draw";
+    document.querySelector(".replay").classList.toggle("hide");
+  }
+  winner && document.querySelector(".replay").classList.toggle("hide");
+
   choice = !choice;
 }
 
 function check(pick) {
-  if (
-    cells[0].style.background === pick &&
-    cells[1].style.background === pick &&
-    cells[2].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[3].style.background === pick &&
-    cells[4].style.background === pick &&
-    cells[5].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[6].style.background === pick &&
-    cells[7].style.background === pick &&
-    cells[8].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[0].style.background === pick &&
-    cells[3].style.background === pick &&
-    cells[6].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[1].style.background === pick &&
-    cells[4].style.background === pick &&
-    cells[7].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[2].style.background === pick &&
-    cells[5].style.background === pick &&
-    cells[8].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[0].style.background === pick &&
-    cells[4].style.background === pick &&
-    cells[8].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (
-    cells[2].style.background === pick &&
-    cells[4].style.background === pick &&
-    cells[6].style.background === pick
-  ) {
-    alert(pick + " is the winner ");
-  } else if (counter >= 9) {
-    alert("it's a draw");
+  //Array with possible winning combinations
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (
+      cells[a].textContent &&
+      cells[a].textContent === cells[b].textContent &&
+      cells[a].textContent === cells[c].textContent
+    ) {
+      setWinner(cells[a].textContent);
+      return pick;
+    }
   }
 }
+function setWinner(p) {
+  document.getElementById("winner").textContent = p + " is the winner ";
 
+  //Prevent clicking the board after winner is set
+  cells.forEach((cell, i) => {
+    cell.removeEventListener("click", handleclick, { once: true });
+  });
+}
 function clean() {
   window.location.reload();
 }
